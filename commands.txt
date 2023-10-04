@@ -1,0 +1,79 @@
+#from cmd as admin
+
+ssh -i C:\My_Docs\GERMANY\ALAM\Frankfurt\Resume\Interview Prep\CI_CD_Project\djangokey.pem ubuntu@<publicip address of EC2>
+
+#To install Docker
+
+sudo apt-get install docker.io
+sudo docker build . -t <imagename>:<image tag>  #build docker image with name and tag
+
+
+sudo docker run -p <docker container port>:<host machine port> -it <docker image id> 
+#ex: sudo docker run -p 8000:8000 -it docker-image:v1
+
+sudo docker images #list all docker images
+sudo docker ps #list docker conatainers
+
+sudo docker rmi <image id1> <image id 2> <etc> #remove docker images
+sudo docker rm -f $(sudo docker ps -a -q) #remove all docker container forcefully
+sudo docker stop <container id> #stop running container
+sudo docker rm <container id> #remove stopped container
+
+#Troubleshooting steps for docker errors
+sudo systemctl daemon-reload
+sudo systemctl restart docker
+sudo systemctl restart docker.socket docker.service
+docker rm -f <container id> // remove all containers which can cause your problem
+
+
+
+#############################Jenkins EC2 Instance######################################
+#On Jenkins EC2 Instance
+#Login using ssh
+ssh -i django-key.pem ubuntu@<public ip address of EC2>
+
+#update packages
+sudo apt-get update
+
+#To install jenkins, first install java JDK for runtime environment for Jenkins (go to jenkins
+#installation manual for instruction
+sudo apt update
+sudo apt install openjdk-17-jre
+java -version
+
+#install jenkins using commands from Jenkins.io website as mentioned below
+curl -fsSL https://pkg.jenkins.io/debian/jenkins.io-2023.key | sudo tee \
+  /usr/share/keyrings/jenkins-keyring.asc > /dev/null
+echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] \
+  https://pkg.jenkins.io/debian binary/ | sudo tee \
+  /etc/apt/sources.list.d/jenkins.list > /dev/null
+sudo apt-get update
+sudo apt-get install jenkins
+
+#once jenkins is installed allow port inbound traffic on port 8080 of jenkins Ec2 instance using security Group in AWS
+#all the three servers are put on same security group for this project and inbound rules are set accordingly
+#Now jenkins can be opend from browser onport 8080 of the public ip address of Jenkins EC2
+#Ex: http://54.91.66.54:8080/
+
+#The jenkins website will ask for a secret key which can be found using the below command
+sudo service jenkins status
+#OR
+systemctl status jenkins
+
+#the secret key will be like c9e37e7b21714b2c8cd673e51a7b36c7
+#Enter the secret key in Jenkins broser window and select default plugins installation option
+#Once done then create the username and login account
+#Example:
+username:alamsk
+Password:Paris2022////
+Full Name:ALAM SHER KHAN
+Email:alamsherkhan1@gmail.com 
+
+#Click continue, save and finish
+
+#Inside jenking, we will create jenkin slave nodes for staging and production servers as below:
+Manage Jenkins>Security>Set TCP Post for Inbound agents as 'Random'
+
+#Login via ssh to Staging and production EC2 and install Java JDK on Staging and Production Ec2 using above steps, Jenkins Slaves needs Java for connecting to Jenkins Master Node
+
+#
